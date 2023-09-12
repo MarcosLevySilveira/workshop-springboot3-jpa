@@ -10,6 +10,8 @@ import com.studies.course.entities.User;
 import com.studies.course.repositories.UserRepository;
 import com.studies.course.services.exceptions.ResourceNotFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class UserService {
 	@Autowired
@@ -39,9 +41,17 @@ public class UserService {
 
 	public User update(Long id, User obj) {
 		// User entity = repository.getReferenceById(id);
-		User entity = findById(id);
-		updateData(entity, obj);
-		return repository.save(entity);
+		
+		try{
+			User entity = findById(id);
+			updateData(entity, obj);
+			return repository.save(entity);
+		}
+		catch (EntityNotFoundException e) {
+			e.printStackTrace();
+			throw new ResourceNotFoundException(id);
+		}
+		
 	}
 
 	private void updateData(User entity, User obj) {
